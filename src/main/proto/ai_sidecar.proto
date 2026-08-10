@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.orchestraj.grpc";
+option java_outer_classname = "AiSidecarProto";
+
+package orchestraj.sidecar;
+
+service InferenceService {
+  rpc RunTask (InferenceRequest) returns (InferenceResponse);
+}
+
+message InferenceRequest {
+  string session_id = 1;
+  string goal_id = 2;
+  string instruction_json = 3;
+}
+
+message InferenceResponse {
+  string session_id = 1;
+  string goal_id = 2;
+  bool success = 3;
+  double confidence = 4;
+  string output_json = 5;
+  string error = 6;
+}

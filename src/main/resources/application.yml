@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: orchestra-j
+server:
+  port: 8080
+
+hitl:
+  thresholds:
+    biomed-confidence: 0.75
+    warehouse-cost: 1000
+
+sidecar:
+  base-url: http://localhost:8000
