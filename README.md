@@ -13,9 +13,16 @@ MVP-реализация гибридной платформы **Thick Orchestra
 4. Tool Gateway + Bean Validation для биомед-инпута.
 5. API:
    - `POST /api/workflow/run`
+   - `POST /api/workflow/run-async`
+   - `GET /api/workflow/{taskId}`
+   - `POST /api/workflow/{taskId}/cancel`
+   - `GET /api/hitl/pending`
+   - `GET /api/hitl/{taskId}`
    - `POST /api/hitl/approve/{taskId}`
 6. Python sidecar:
    - `POST /inference/run-task`
+7. Для sidecar-вызовов включены timeout/retry/backoff/circuit breaker (конфиг в `application.yml`).
+8. Ошибки API возвращаются в едином формате: `code`, `message`, `details`, `traceId`.
 
 ## Быстрый старт
 
@@ -36,6 +43,7 @@ mvn spring-boot:run
 ```bash
 curl -X POST http://localhost:8080/api/workflow/run \
   -H "Content-Type: application/json" \
+  -H "Idempotency-Key: run-g1-001" \
   -d '{
     "sessionId":"s-1",
     "goalId":"g-1",
@@ -43,4 +51,28 @@ curl -X POST http://localhost:8080/api/workflow/run \
     "domain":"biomed",
     "instructionJson":"{\"task\":\"screen\"}"
   }'
+```
+
+### 4) Асинхронный запуск workflow
+```bash
+curl -X POST http://localhost:8080/api/workflow/run-async \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: async-g1-001" \
+  -d '{
+    "sessionId":"s-1",
+    "goalId":"g-1",
+    "objective":"Analyze target",
+    "domain":"biomed",
+    "instructionJson":"{\"task\":\"screen\"}"
+  }'
+```
+
+Проверка статуса:
+```bash
+curl http://localhost:8080/api/workflow/<taskId>
+```
+
+Отмена задачи:
+```bash
+curl -X POST http://localhost:8080/api/workflow/<taskId>/cancel
 ```

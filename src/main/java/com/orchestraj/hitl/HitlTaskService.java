@@ -1,6 +1,8 @@
 package com.orchestraj.hitl;
 
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,5 +40,20 @@ public class HitlTaskService {
         PendingTask updated = task.withStatus(status);
         tasks.put(taskId, updated);
         return updated;
+    }
+
+    public PendingTask get(String taskId) {
+        PendingTask task = tasks.get(taskId);
+        if (task == null) {
+            throw new IllegalArgumentException("Unknown HITL task: " + taskId);
+        }
+        return task;
+    }
+
+    public List<PendingTask> listPending() {
+        return tasks.values().stream()
+                .filter(task -> task.status() == TaskStatus.PENDING_APPROVAL)
+                .sorted(Comparator.comparing(PendingTask::createdAt))
+                .toList();
     }
 }

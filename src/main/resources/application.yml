@@ -11,3 +11,14 @@ hitl:
 
 sidecar:
   base-url: http://localhost:8000
+  resilience:
+    request-timeout-millis: 5000
+    max-retries: 2
+    retry-backoff-millis: 200
+    circuit-breaker:
+      failure-threshold: 3
+      open-millis: 10000
+
+workflow:
+  async:
+    timeout-seconds: 30
